@@ -1,5 +1,48 @@
 #!/usr/bin/env sh
-# POSIX‐only installer for SSH Vault Manager
+# ============================================================================
+# SSH Vault Manager Installer v2.1.0
+# ============================================================================
+#
+# DESCRIPTION:
+#   POSIX-compliant installer script for SSH Vault Manager that follows XDG
+#   Base Directory Specification. Installs the application files to a user's
+#   local directory and creates a convenient wrapper script.
+#
+# DEPENDENCIES:
+#   - sh:     POSIX-compliant shell
+#   - mkdir:  Create directories
+#   - rm:     Remove files and directories
+#   - cp:     Copy files and directories
+#   - chmod:  Change file permissions
+#   - cat:    Concatenate and print files
+#
+# USAGE:
+#   ./install.sh                        # Default installation
+#   ./install.sh --help                 # Show help
+#   ./install.sh --install-dir /path    # Custom installation directory
+#   ./install.sh --wrapper /path/cmd    # Custom wrapper location
+#
+# EXAMPLES:
+#   ./install.sh
+#   ./install.sh --install-dir ~/.apps/svm --wrapper ~/bin/sshvault
+#
+# ENVIRONMENT VARIABLES:
+#   INSTALL_DIR:    Override installation directory
+#   WRAPPER_LINK:   Override wrapper script location
+#   XDG_DATA_HOME:  User data directory (default: ~/.local/share)
+#   XDG_BIN_HOME:   User binary directory (default: ~/.local/bin)
+#   HOME:           User home directory
+#
+# SECURITY CONSIDERATIONS:
+#   - Files are installed with current user permissions
+#   - Wrapper executable has its execute bit set (chmod +x)
+#   - No system-wide changes are made; all changes are user-local
+#
+# AUTHOR:
+#   SSH Vault Manager Team
+#   License: MIT (see LICENSE file for details)
+#
+# ============================================================================
 
 # Exit on error or undefined var
 set -eu
