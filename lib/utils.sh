@@ -348,7 +348,7 @@ banner() {
     echo "    ║$(printf '%*s' $banner_width '')║"
     
     # Title line - center text without emojis first, then add them
-    local title_text="SSH Vault Manager v${SVM_VERSION}"
+    local title_text="SSH Vault Manager ${SVM_VERSION}"
     local title_display="🔐 ${title_text} 🔐"
     # Account for emoji display: text length + 2 spaces + 4 (2 emojis * 2 display chars each)
     local title_visual_len=$((${#title_text} + 2 + 4))
