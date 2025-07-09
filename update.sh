@@ -98,8 +98,8 @@ fi
 
 # Check current version
 log "${BLUE}Checking current version...${NC}"
-if [ -f "$INSTALL_DIR/version.txt" ]; then
-    CURRENT_VERSION=$(cat "$INSTALL_DIR/version.txt")
+if [ -f "$INSTALL_DIR/VERSION" ]; then
+    CURRENT_VERSION=$(cat "$INSTALL_DIR/VERSION")
     log "Current version: ${GREEN}$CURRENT_VERSION${NC}"
 else
     error_exit "Cannot determine current version"
