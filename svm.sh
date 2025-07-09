@@ -128,6 +128,12 @@ main() {
     vault_search_mode=false
     vault_arg=""
 
+    # Handle special arguments
+    if [[ "$1" == "--verify-passphrase" ]]; then
+        verify_master_passphrase
+        exit $?
+    fi
+
     # Enhanced argument parsing for per-vault search
     while [[ $# -gt 0 ]]; do
         case $1 in

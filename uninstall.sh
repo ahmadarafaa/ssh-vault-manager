@@ -34,6 +34,52 @@ CYAN='\033[0;36m'
 BOLD='\033[1m'
 NC='\033[0m' # No Color
 
+
+# Verify master passphrase before proceeding
+echo "${BLUE}🔐 Verifying master passphrase${NC}"
+echo "${YELLOW}This helps prevent accidental or unauthorized removal of SSH Vault Manager${NC}"
+echo
+
+# Self-contained passphrase verification function
+verify_uninstall_passphrase() {
+    # Check if .master_hash exists
+    if [ ! -f "$DATA_DIR/.master_hash" ]; then
+        echo "${RED}❌ Master passphrase file not found. Uninstallation requires a valid installation.${NC}"
+        return 1
+    fi
+
+    # Read the passphrase
+    printf "Enter master passphrase to confirm uninstallation: "
+    stty -echo
+    read -r input_pass
+    stty echo
+    printf "\n"
+
+    # Hash the input using the same method as the main application
+    input_hash=$(printf "%s" "$input_pass" | openssl dgst -sha256 | awk '{print $NF}')
+    stored_hash=$(cat "$DATA_DIR/.master_hash")
+
+    # Clear the passphrase from memory
+    input_pass=""
+
+    # Compare hashes
+    if [ "$input_hash" = "$stored_hash" ]; then
+        return 0
+    else
+        return 1
+    fi
+}
+
+# Verify the master passphrase
+if ! verify_uninstall_passphrase; then
+    echo "${RED}❌ Master passphrase verification failed. Uninstallation aborted.${NC}"
+    exit 1
+fi
+
+echo "${GREEN}✓ Master passphrase verified successfully${NC}"
+echo "${YELLOW}Proceeding with uninstallation...${NC}"
+echo
+
 # Secure deletion function
 secure_delete() {
     local path="$1"
@@ -259,13 +305,16 @@ if [ "$BACKUP_DATA" = "true" ] && [ -d "$DATA_DIR" ]; then
   echo
 fi
 
-# Remove wrapper link
-if [ -L "$WRAPPER_LINK" ] || [ -f "$WRAPPER_LINK" ]; then
-  rm -f "$WRAPPER_LINK"
-  echo "✅ Removed wrapper script: $WRAPPER_LINK"
-else
-  echo "ℹ️ Wrapper script not found at: $WRAPPER_LINK"
-fi
+# Remove all wrapper scripts
+echo "Removing wrapper scripts..."
+for wrapper in "${WRAPPER_LINK}" "${XDG_BIN_HOME}/svm-update" "${XDG_BIN_HOME}/svm-uninstall"; do
+  if [ -L "$wrapper" ] || [ -f "$wrapper" ]; then
+    rm -f "$wrapper"
+    echo "✅ Removed wrapper script: $wrapper"
+  else
+    echo "ℹ️ Wrapper script not found at: $wrapper"
+  fi
+done
 
 # Remove installation directory
 if [ -d "$INSTALL_DIR" ]; then

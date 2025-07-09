@@ -1,6 +1,10 @@
 #!/usr/bin/env sh
+# Get script directory and read version
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SVM_VERSION=$(cat "$SCRIPT_DIR/VERSION" 2>/dev/null | tr -d '\n' || echo "unknown")
+
 # ============================================================================
-# SSH Vault Manager Installer v2.1.0
+# SSH Vault Manager Installer ${SVM_VERSION}
 # ============================================================================
 #
 # DESCRIPTION:
@@ -356,11 +360,27 @@ exec "$INSTALL_DIR/svm.sh" "\$@"
 EOF
 chmod +x "$WRAPPER_LINK"
 
+# Create the svm-update wrapper
+cat > "${XDG_BIN_HOME}/svm-update" <<EOF
+#!/usr/bin/env sh
+exec "${INSTALL_DIR}/update.sh" "\$@"
+EOF
+chmod +x "${XDG_BIN_HOME}/svm-update"
+
+# Create the svm-uninstall wrapper
+cat > "${XDG_BIN_HOME}/svm-uninstall" <<EOF
+#!/usr/bin/env sh
+exec "${INSTALL_DIR}/uninstall.sh" "\$@"
+EOF
+chmod +x "${XDG_BIN_HOME}/svm-uninstall"
+
 echo
 echo "${GREEN}${BOLD}✅ Installation complete!${NC}"
-echo "   • Code:    ${CYAN}$INSTALL_DIR${NC}"
-echo "   • Command: ${CYAN}$(basename "$WRAPPER_LINK")${NC}"
-echo "   • Data:    ${CYAN}$BASE_DIR${NC}"
+echo "   • Code:     ${CYAN}$INSTALL_DIR${NC}"
+echo "   • Commands: ${CYAN}$(basename "$WRAPPER_LINK")${NC} (main command)"
+echo "              ${CYAN}svm-update${NC} (update utility)"
+echo "              ${CYAN}svm-uninstall${NC} (uninstall utility)"
+echo "   • Data:     ${CYAN}$BASE_DIR${NC}"
 
 if [ "$RESTORE_FROM_BACKUP" = "true" ]; then
     echo
@@ -368,4 +388,7 @@ if [ "$RESTORE_FROM_BACKUP" = "true" ]; then
 fi
 
 echo
-echo "${BLUE}Now run '$(basename "$WRAPPER_LINK")' from any directory.${NC}"
+echo "${BLUE}Now you can run:${NC}"
+echo "• ${CYAN}$(basename "$WRAPPER_LINK")${NC} - to manage your SSH connections"
+echo "• ${CYAN}svm-update${NC} - to update SSH Vault Manager"
+echo "• ${CYAN}svm-uninstall${NC} - to safely remove SSH Vault Manager"
