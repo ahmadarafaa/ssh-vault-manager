@@ -10,6 +10,9 @@
 # Exit on error or undefined var
 set -eu
 
+# Set error trap handler
+trap 'error_exit "An error occurred during update"' INT TERM
+
 # Default XDG locations
 : "${XDG_DATA_HOME:=${HOME}/.local/share}"
 : "${XDG_BIN_HOME:=${HOME}/.local/bin}"
@@ -128,7 +131,7 @@ if [ "$DRY_RUN" = "true" ]; then
 else
     log "${BLUE}Starting update process...${NC}"
     TMP_DIR=$(mktemp -d)
-    trap 'rm -rf "$TMP_DIR"' EXIT
+    trap 'rm -rf "${TMP_DIR}"' EXIT INT TERM
     
     git clone --depth 1 "$REPO_URL" "$TMP_DIR" || error_exit "Failed to download update"
     rm -rf "$INSTALL_DIR"/*
