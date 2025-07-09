@@ -4,6 +4,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.2] - 2025-07-09
+### Added
+- Added `svm-update` wrapper command for easier updates
+- Added secure passphrase verification for uninstallation process
+- Improved wrapper script management in installation/uninstallation
+
+### Fixed
+- Ensure all wrapper scripts (svm, svm-update, svm-uninstall) are properly removed during uninstallation
+- Fixed version consistency across all components
+
+### Changed
+- Made uninstall script POSIX-compliant for better portability
+- Improved installation completion message to show all available commands
+- Enhanced security by requiring master passphrase verification for uninstallation
+
+### Security
+- Added passphrase verification to prevent unauthorized uninstallation
+## [2.1.1] - 2025-07-09
+### Added
+- Secure uninstallation process with master passphrase verification
+- `svm-uninstall` wrapper command for safer removal
+
+### Security
+- Added passphrase verification to prevent unauthorized uninstallation
+
 ## [2.1.0] - 2025-07-09
 ### Added
 - Comprehensive version checking with `lib/version_check.sh` for dependencies like bash and openssl.

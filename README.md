@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Shell Script](https://img.shields.io/badge/Shell%20Script-Bash-blue.svg)](https://www.gnu.org/software/bash/)
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20WSL-lightgrey.svg)](https://en.wikipedia.org/wiki/Linux)
-[![Version](https://img.shields.io/badge/Version-2.1.0-green.svg)](https://github.com/ahmadarafaa/ssh-vault-manager/releases)
+[![Version](https://img.shields.io/badge/Version-2.1.2-green.svg)](https://github.com/ahmadarafaa/ssh-vault-manager/releases)
 
 > **Unlock powerful SSH management with modular architecture, encrypted vaults, and advanced features—including secure, interactive password-based server access for effortless and safe connections.**
 
@@ -99,15 +99,12 @@ To cleanly remove SSH Vault Manager, use the provided uninstall script:
 svm-uninstall
 ```
 
-Alternatively, you can run the uninstall script directly:
+The uninstallation process requires verification of your master passphrase to prevent accidental removals. This ensures that only authorized users can uninstall the application.
 
-```sh
-sh ~/.local/share/opt/ssh-vault-manager/uninstall.sh
-```
-
-This will:
+The uninstaller will:
+- Verify your master passphrase
 - Remove all SVM files from your installation directory
-- Delete the wrapper script from your bin directory
+- Delete the wrapper scripts from your bin directory
 - Provide an option to keep or remove your vault data
 - Thoroughly clean up any temporary or leftover files
 
@@ -197,20 +194,7 @@ svm
 | `SVM_LOG_LEVEL`  | Logging level                      | `INFO`       |
 | `SVM_TIMEOUT`    | Connection timeout (seconds)       | `30`         |
 
-### Testing Instructions
-
-Automated testing is set up using [bats-core](https://bats-core.readthedocs.io/). Ensure you have `bats` installed:
-
-```bash
-git clone https://github.com/bats-core/bats-core.git
-cd bats-core
-./install.sh /usr/local
-```
-
-To run all tests, use:
-```bash
-bats tests/
-```
+### Configuration Files
 
 ### File Structure
 ```
