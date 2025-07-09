@@ -3,6 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Shell Script](https://img.shields.io/badge/Shell%20Script-Bash-blue.svg)](https://www.gnu.org/software/bash/)
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20WSL-lightgrey.svg)](https://en.wikipedia.org/wiki/Linux)
+[![Version](https://img.shields.io/badge/Version-2.0.1-green.svg)](https://github.com/ahmadarafaa/ssh-vault-manager/releases)
 
 > **Unlock powerful SSH management with modular architecture, encrypted vaults, and advanced features—including secure, interactive password-based server access for effortless and safe connections.**
 
@@ -79,6 +80,27 @@ sh install.sh
 - Creates a lightweight wrapper script (`svm`) in your user bin directory
 - Warns if the bin directory is not in your PATH
 - Does not require root or sudo (unless you choose a system-wide location)
+- Creates all necessary directory structures for SVM operation
+
+### Uninstallation
+
+To cleanly remove SSH Vault Manager, use the provided uninstall script:
+
+```sh
+svm-uninstall
+```
+
+Alternatively, you can run the uninstall script directly:
+
+```sh
+sh ~/.local/share/opt/ssh-vault-manager/uninstall.sh
+```
+
+This will:
+- Remove all SVM files from your installation directory
+- Delete the wrapper script from your bin directory
+- Provide an option to keep or remove your vault data
+- Thoroughly clean up any temporary or leftover files
 
 ### Manual Installation (Advanced)
 
@@ -207,6 +229,8 @@ ssh-vault-manager/
 - **Temporary file cleanup** after operations
 - **Error handling** without exposing sensitive information
 - **Logging** without sensitive data exposure
+- **Enhanced backup and restore** functionality with improved error handling
+- **Security improvements** in handling sensitive data within `lib/security.sh`
 
 ## 🤝 Contributing
 We welcome contributions! Here's how you can help:
