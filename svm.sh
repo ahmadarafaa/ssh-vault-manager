@@ -6,8 +6,15 @@ if [ -z "$BASH_VERSION" ]; then
     exit 1
 fi
 
+# Get the directory where this script is located
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# Get version from VERSION file before anything else
+SVM_VERSION=$(cat "$SCRIPT_DIR/VERSION" 2>/dev/null | tr -d '\n' || echo "unknown")
+export SVM_VERSION
+
 # ============================================================================
-# SSH Vault Manager v2.1.0 - Modular Version
+# SSH Vault Manager ${SVM_VERSION} - Modular Version
 # ============================================================================
 #
 # DESCRIPTION:
@@ -81,8 +88,7 @@ IFS=$'\n\t'        # Internal field separator for better security
 # MODULE LOADING
 # ============================================================================
 
-# Get the directory where this script is located
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# Set the lib directory based on the script directory
 LIB_DIR="$SCRIPT_DIR/lib"
 
 # Source all modules
