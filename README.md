@@ -41,6 +41,8 @@ Managing multiple SSH servers with different credentials can be challenging and 
 - **Password Protection**: Master passphrase required for vault access
 - **Secure Credential Storage**: No plain text passwords stored
 - **Session Management**: Automatic cleanup and secure session handling
+- **Multi-level Security**: Configurable security levels with DOD-standard memory protection
+- **Variable Protection**: Advanced tracking and sanitization of sensitive variables
 
 ### 🗂️ Vault Management
 - **Multiple Vaults**: Create and manage separate vaults for different environments
@@ -253,6 +255,11 @@ ssh-vault-manager/
 - **Logging** without sensitive data exposure
 - **Enhanced backup and restore** functionality with improved error handling
 - **Security improvements** in handling sensitive data within `lib/security.sh`
+- **DOD-standard memory wiping** for secure data cleanup
+- **Configurable security levels** (low, medium, high)
+- **Memory sanitization** on process exit
+- **Secure variable tracking** for sensitive data
+- **Automated security testing** with comprehensive test suite
 
 ## 🤝 Contributing
 We welcome contributions! Here's how you can help:

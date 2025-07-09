@@ -11,11 +11,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Configuration loading and validation with `lib/config_validator.sh` for integrity checks and schema upgrades.
 - A full test suite using `bats-core`, covering version checks, validation logic, and configuration management.
 - Improved dry-run functionality for safer execution of operations with preview capability.
+- Advanced memory security with configurable security levels (low, medium, high)
+- Improved update script with dry-run capability and better error handling
+- Version consistency across all components
 
 ### Security
 - Enhanced input validation to prevent potential injection attacks.
 - Strengthened integrity checks on configuration files.
 - Improved error handling to ensure no sensitive information is exposed.
+- Implemented DOD-standard memory wiping for sensitive data
+- Added secure variable handling and tracking
+- Enhanced memory sanitization on process exit
 
 ### Breaking Changes
 - Configuration files from versions prior to 2.0 may require manual upgrade steps provided in the upgrade notes.
