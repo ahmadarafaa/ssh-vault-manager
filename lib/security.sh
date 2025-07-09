@@ -219,8 +219,26 @@ safe_execute() {
     return 0
 }
 
+# Initialize security directory structure
+init_security_directories() {
+    # Ensure base vault directory exists
+    if [ ! -d "$HOME/.svm" ]; then
+        mkdir -p "$HOME/.svm"
+        chmod 700 "$HOME/.svm"
+    fi
+    
+    # Ensure security log directory exists
+    if [ ! -d "$HOME/.svm/logs" ]; then
+        mkdir -p "$HOME/.svm/logs"
+        chmod 700 "$HOME/.svm/logs"
+    fi
+}
+
 # Secure environment setup
 setup_secure_environment() {
+    # Initialize security directories
+    init_security_directories
+
     # Set secure PATH - only system directories, no current directory
     export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
     
@@ -272,8 +290,8 @@ log_security_event() {
     local hostname=$(hostname)
     local session_id="$SESSION_START"
     
-    # Create security log file if it doesn't exist
-    local security_log="$base_vault_dir/.security.log"
+    # Use the security log in the logs directory
+    local security_log="$HOME/.svm/logs/.security.log"
     if [[ ! -f "$security_log" ]]; then
         touch "$security_log"
         chmod 600 "$security_log"
