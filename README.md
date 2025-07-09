@@ -3,7 +3,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Shell Script](https://img.shields.io/badge/Shell%20Script-Bash-blue.svg)](https://www.gnu.org/software/bash/)
 [![Platform](https://img.shields.io/badge/Platform-Linux%20%7C%20macOS%20%7C%20WSL-lightgrey.svg)](https://en.wikipedia.org/wiki/Linux)
-[![Version](https://img.shields.io/badge/Version-2.0.1-green.svg)](https://github.com/ahmadarafaa/ssh-vault-manager/releases)
+[![Version](https://img.shields.io/badge/Version-2.1.0-green.svg)](https://github.com/ahmadarafaa/ssh-vault-manager/releases)
 
 > **Unlock powerful SSH management with modular architecture, encrypted vaults, and advanced features—including secure, interactive password-based server access for effortless and safe connections.**
 
@@ -52,7 +52,12 @@ Managing multiple SSH servers with different credentials can be challenging and 
 - **Server Information**: Detailed server details and statistics
 - **Connection Logging**: Track connection history and usage
 
-### 🎨 User Experience
+### 🌟 Validation Features
+- **Centralized Input Validation**: Improved input validation with centralized validation logic, allowing for consistent checks across modules.
+- **Configuration Integrity**: Schema validation and upgrade handling for configuration files, ensuring consistency and reducing errors.
+
+### 🏃 Dry-Run Functionality
+- **Safe Execution**: New dry-run mode that allows users to preview the results of vault operations without making any changes, helping to prevent accidental modifications.
 - **Beautiful Interface**: Color-coded, intuitive menu system
 - **Error Handling**: Robust error handling with user-friendly messages
 - **Input Validation**: Improved input validation with centralized validation logic

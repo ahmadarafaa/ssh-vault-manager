@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Centralized input validation in `lib/validation.sh` covering file paths, hostnames, and more.
 - Configuration loading and validation with `lib/config_validator.sh` for integrity checks and schema upgrades.
 - A full test suite using `bats-core`, covering version checks, validation logic, and configuration management.
+- Improved dry-run functionality for safer execution of operations with preview capability.
 
 ### Security
 - Enhanced input validation to prevent potential injection attacks.
