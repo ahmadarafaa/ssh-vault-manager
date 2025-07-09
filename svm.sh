@@ -6,8 +6,64 @@ if [ -z "$BASH_VERSION" ]; then
     exit 1
 fi
 
-# SSH Vault Manager v2.0 - Modular Version
-# Secure, Fast, Reliable, Multi-Vault Support
+# ============================================================================
+# SSH Vault Manager v2.1.0 - Modular Version
+# ============================================================================
+#
+# DESCRIPTION:
+#   A secure command-line tool for managing SSH connection details across
+#   multiple encrypted vaults. Provides secure storage, quick access, and
+#   automated connection to remote servers with credentials stored in
+#   encrypted vaults.
+#
+# SECURITY FEATURES:
+#   - Secure memory handling (no core dumps, cleared command history)
+#   - Strong encryption using OpenSSL (AES-256-CBC by default)
+#   - Process isolation to prevent side-channel attacks
+#   - Secure temporary files with automatic cleanup
+#   - Master passphrase used for vault encryption
+#   - No plaintext credentials stored on disk
+#   - Restrictive file permissions (umask 077)
+#   - Comprehensive security event logging
+#
+# DEPENDENCIES:
+#   - bash:     Version 4.0 or higher
+#   - openssl:  Version 1.1.0 or higher for encryption
+#   - ssh:      For connection to remote servers
+#   - scp:      For file transfers (optional)
+#   - grep:     For searching capabilities
+#   - sed:      For text processing
+#
+# CONFIGURATION:
+#   Environment variables that can be used to customize behavior:
+#   - SVM_LAUNCH_DIR:      Directory from which svm was launched
+#   - SVM_CONFIG_DIR:      Override configuration directory
+#   - SVM_DEFAULT_VAULT:   Set the default vault to use
+#   - SVM_EDITOR:          Text editor for editing server details
+#   - SVM_LOG_LEVEL:       Control verbosity of logging
+#   - SVM_NO_COLOR:        Disable colored output
+#
+# MODULE SYSTEM:
+#   The application uses a modular architecture with separate library files:
+#   - config.sh:      Configuration handling and settings
+#   - security.sh:    Security features and secure memory handling
+#   - utils.sh:       Utility functions and helpers
+#   - encryption.sh:  Encryption and decryption functions
+#   - vault.sh:       Vault management system
+#   - server.sh:      Server operations (add, edit, connect)
+#   - menu.sh:        Interactive user interface
+#
+# USAGE EXAMPLES:
+#   svm                         # Start interactive mode
+#   svm servername              # Search and connect to a server
+#   svm --vault prod servername # Search in a specific vault
+#   svm -v staging servername   # Same as above, shorthand version
+#
+# AUTHOR:
+#   SSH Vault Manager Team
+#   License: MIT (see LICENSE file for details)
+#
+# ============================================================================
 
 # ============================================================================
 # SECURITY HARDENING
@@ -19,7 +75,7 @@ set +o history
 umask 077
 
 # Enhanced security settings
-set -eo pipefail  # Exit on error, pipe failures (removed -u for menu compatibility)
+set -eo pipefail   # Exit on error, pipe failures
 IFS=$'\n\t'        # Internal field separator for better security
 
 # ============================================================================

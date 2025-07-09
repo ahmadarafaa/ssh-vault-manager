@@ -55,7 +55,9 @@ Managing multiple SSH servers with different credentials can be challenging and 
 ### 🎨 User Experience
 - **Beautiful Interface**: Color-coded, intuitive menu system
 - **Error Handling**: Robust error handling with user-friendly messages
-- **Input Validation**: Comprehensive input validation and retry mechanisms
+- **Input Validation**: Improved input validation with centralized validation logic
+- **Version Checking**: Automated version comparison for dependencies.
+- **Configuration Integrity**: Schema validation and upgrade handling for configuration files.
 - **Progress Feedback**: Clear status messages and progress indicators
 
 ## 🚀 Installation
@@ -187,6 +189,21 @@ svm
 | `SVM_VAULT_DIR`  | Base directory for vaults          | `~/.svm`     |
 | `SVM_LOG_LEVEL`  | Logging level                      | `INFO`       |
 | `SVM_TIMEOUT`    | Connection timeout (seconds)       | `30`         |
+
+### Testing Instructions
+
+Automated testing is set up using [bats-core](https://bats-core.readthedocs.io/). Ensure you have `bats` installed:
+
+```bash
+git clone https://github.com/bats-core/bats-core.git
+cd bats-core
+./install.sh /usr/local
+```
+
+To run all tests, use:
+```bash
+bats tests/
+```
 
 ### File Structure
 ```
