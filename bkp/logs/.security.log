@@ -1,0 +1,28 @@
+[2025-07-09 08:47:19 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050839] [ENVIRONMENT_SECURED] Secure environment initialized
+[2025-07-09 08:47:19 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050839] [PROCESS_ISOLATED] Process isolation configured - PID: 1976022
+[2025-07-09 08:47:27 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050839] [DIRECTORY_EXISTS] Directory already exists: /home/a.arafa/.svm
+[2025-07-09 08:47:27 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050839] [DIRECTORY_EXISTS] Directory already exists: /home/a.arafa/.svm/vaults
+[2025-07-09 08:47:27 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050839] [VAULT_SYSTEM_INITIALIZED] Vault management system initialized securely
+[2025-07-09 08:47:27 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050839] [SESSION_STARTED] SVM session started
+[2025-07-09 08:47:36 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050839] [TEMP_DIR_CREATED] SVM temp directory created: /tmp/.svm-temp
+[2025-07-09 08:47:37 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050839] [VAULT_ENCRYPTED] Vault encrypted successfully: /home/a.arafa/.svm/vaults/New/.vault.enc
+[2025-07-09 08:47:41 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050839] [PASSPHRASE_SET] Using master passphrase for vault: New
+[2025-07-09 08:47:41 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050839] [VAULT_DECRYPTED] Vault decrypted successfully: /home/a.arafa/.svm/vaults/New/.vault.enc
+[2025-07-09 08:47:53 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050839] [VAULT_ENCRYPTED] Vault encrypted successfully: /home/a.arafa/.svm/vaults/New/.vault.enc
+[2025-07-09 08:47:55 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050839] [SESSION_TERMINATED] SVM session terminated normally
+[2025-07-09 08:47:56 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050839] [MEMORY_CLEARED] Sensitive variable cleared: passphrase
+[2025-07-09 08:47:56 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050839] [MEMORY_CLEARED] Sensitive variable cleared: master_passphrase
+[2025-07-09 08:47:56 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050839] [MEMORY_CLEARED] Sensitive variable cleared: password
+[2025-07-09 08:47:56 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050839] [ALL_SVM_TEMP_FILES_CLEANED] All SVM temp files cleaned and directory removed
+[2025-07-09 08:48:40 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050920] [ENVIRONMENT_SECURED] Secure environment initialized
+[2025-07-09 08:48:40 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050920] [PROCESS_ISOLATED] Process isolation configured - PID: 1977110
+[2025-07-09 08:48:42 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050920] [LOGIN_SUCCESS] Master passphrase verified successfully
+[2025-07-09 08:48:42 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050920] [DIRECTORY_EXISTS] Directory already exists: /home/a.arafa/.svm
+[2025-07-09 08:48:42 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050920] [DIRECTORY_EXISTS] Directory already exists: /home/a.arafa/.svm/vaults
+[2025-07-09 08:48:42 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050920] [VAULT_SYSTEM_INITIALIZED] Vault management system initialized securely
+[2025-07-09 08:48:42 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050920] [TEMP_DIR_CREATED] SVM temp directory created: /tmp/.svm-temp
+[2025-07-09 08:48:42 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050920] [SESSION_STARTED] SVM session started
+[2025-07-09 08:49:46 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050920] [SESSION_TERMINATED] SVM session terminated normally
+[2025-07-09 08:49:46 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050920] [MEMORY_CLEARED] Sensitive variable cleared: master_passphrase
+[2025-07-09 08:49:46 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050920] [MEMORY_CLEARED] Sensitive variable cleared: input_pass
+[2025-07-09 08:49:46 UTC] [INFO] [a.arafa@EG10021-lpt] [SID:1752050920] [ALL_SVM_TEMP_FILES_CLEANED] All SVM temp files cleaned and directory removed

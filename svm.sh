@@ -6,8 +6,7 @@ if [ -z "$BASH_VERSION" ]; then
     exit 1
 fi
 
-# SSH Vault Manager v2.0 - Modular Version
-# Secure, Fast, Reliable, Multi-Vault Support
+# Script is initialized, version information is displayed in the banner
 
 # ============================================================================
 # SECURITY HARDENING
