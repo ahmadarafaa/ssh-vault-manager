@@ -56,6 +56,27 @@ else
   mkdir -p "$INSTALL_DIR"
 fi
 
+# Initialize SVM directory structure
+BASE_DIR="${HOME}/.svm"
+echo "Creating SVM directory structure at: $BASE_DIR"
+
+# Create required directories
+mkdir -p "${BASE_DIR}/logs"
+mkdir -p "${BASE_DIR}/vaults"
+
+# Set secure permissions
+chmod 700 "$BASE_DIR"
+chmod 700 "${BASE_DIR}/logs"
+chmod 700 "${BASE_DIR}/vaults"
+
+# Create initial security log
+touch "${BASE_DIR}/logs/.security.log"
+chmod 600 "${BASE_DIR}/logs/.security.log"
+
+# Create vault registry if it doesn't exist
+touch "${BASE_DIR}/.vault_registry"
+chmod 600 "${BASE_DIR}/.vault_registry"
+
 # Copy all files (including hidden, except . and ..)
 # 1) regular
 cp -R * "$INSTALL_DIR"/
