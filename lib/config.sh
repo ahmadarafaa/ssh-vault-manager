@@ -4,12 +4,25 @@
 # CONFIGURATION MODULE
 # ============================================================================
 
+# Get version from VERSION file
+read_version_file() {
+    local version_file="${SCRIPT_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)}/VERSION"
+    if [[ -f "$version_file" ]]; then
+        cat "$version_file"
+    else
+        echo "2.0.0"  # Default fallback version
+    fi
+}
+
+# Set SVM version from the central VERSION file
+SVM_VERSION=$(read_version_file)
+
 # Default configuration
 declare -A CONFIG=(
     [PBKDF2_ITERATIONS]=600000
     [CIPHER]="aes-256-cbc"
     [DIGEST]="sha512"
-    [VAULT_VERSION]="2.0"
+    [VAULT_VERSION]="${SVM_VERSION%.*}"  # Use major.minor from SVM_VERSION
     [PASSPHRASE_TIMEOUT]=300
     [MAX_LOGIN_ATTEMPTS]=3
     [CONNECTION_TIMEOUT]=30

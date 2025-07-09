@@ -4,6 +4,8 @@
 # VAULT MANAGEMENT MODULE
 # ============================================================================
 
+# Use the version from config.sh (SVM_VERSION)
+
 # Initialize vault management system
 init_vault_system() {
     # Create base directories
@@ -103,7 +105,7 @@ save_default_config() {
 PBKDF2_ITERATIONS=600000
 CIPHER=aes-256-cbc
 DIGEST=sha512
-VAULT_VERSION=2.0
+VAULT_VERSION=${SVM_VERSION%.*}
 PASSPHRASE_TIMEOUT=300
 MAX_LOGIN_ATTEMPTS=3
 CONNECTION_TIMEOUT=30
