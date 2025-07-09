@@ -114,6 +114,9 @@ main() {
 
     # Prompt for master passphrase at startup
     verify_master_passphrase
+    
+    # Add master_passphrase to sensitive variables for secure handling
+    declare -a sensitive_vars=("master_passphrase")
 
     # Initialize variables
     server_name=""
@@ -174,6 +177,12 @@ main() {
         if [[ -n "$vault_arg" ]]; then
             vault_path="$vaults_dir/$vault_arg"
             if [[ -d "$vault_path" ]]; then
+                # Clean sensitive data before switching vaults
+                if [[ -n "$vault" && "$vault" != "$vault_path" ]]; then
+                    # Wipe any sensitive vault-specific variables
+                    safe_memory_wipe "passphrase" 2>/dev/null || true
+                fi
+                
                 vault="$vault_path"
                 current_vault_name="$vault_arg"
                 init_file_paths
@@ -189,6 +198,8 @@ main() {
             # Set passphrase for decryption (same as global search)
             passphrase="$master_passphrase"
             if ! decrypt_vault "$servers_file" "$tmp_servers_file" 2>/dev/null; then
+                # Securely wipe passphrase after decryption attempt
+                safe_memory_wipe "passphrase" 2>/dev/null || true
                 echo -e "${YELLOW}No servers found in vault '$current_vault_name'.${NC}"
                 echo -e "${YELLOW}Use 'Add Server' to add your first server.${NC}"
                 exit 0

@@ -4,6 +4,33 @@
 # SECURITY MODULE
 # ============================================================================
 
+# ============================================================================
+# SECURITY LEVELS AND CONFIGURATION
+# ============================================================================
+
+# Security level definitions
+declare -A SECURITY_LEVELS=(
+    [low]="Basic memory protection"
+    [medium]="Enhanced memory protection"
+    [high]="Maximum security with performance impact"
+)
+
+# Security level configuration
+declare -A SECURITY_CONFIG=(
+    [low_wipe_passes]=1
+    [medium_wipe_passes]=2
+    [high_wipe_passes]=3
+    [low_var_timeout]=60
+    [medium_var_timeout]=300
+    [high_var_timeout]=600
+)
+
+# Variable tracking for sensitive data
+declare -A SENSITIVE_VAR_ACCESS=()
+
+# Default security level (can be overridden in user config)
+: "${MEMORY_SECURITY_LEVEL:=medium}"
+
 # Rate limiting functions
 check_rate_limit() {
     local action="$1"
@@ -272,12 +299,18 @@ log_security_event() {
     local hostname=$(hostname)
     local session_id="$SESSION_START"
     
-    # Create security log file if it doesn't exist
-    local security_log="$base_vault_dir/.security.log"
-    if [[ ! -f "$security_log" ]]; then
-        touch "$security_log"
-        chmod 600 "$security_log"
+    # Use test directory if in test mode
+    local security_log
+    if [[ "$SVM_TEST_MODE" == "true" ]]; then
+        security_log="$TEST_LOG_DIR/security.log"
+    else
+        security_log="$base_vault_dir/.security.log"
     fi
+    
+    # Create log directory if it doesn't exist
+    mkdir -p "$(dirname "$security_log")" 2>/dev/null
+    touch "$security_log" 2>/dev/null
+    chmod 600 "$security_log" 2>/dev/null
     
     echo "[$timestamp] [$severity] [$user@$hostname] [SID:$session_id] [$event_type] $details" >> "$security_log"
     
@@ -553,7 +586,47 @@ secure_directory_operation() {
     esac
 }
 
-# Secure command execution
+# ============================================================================
+# MEMORY SECURITY SECTION
+# Provides POSIX-compliant functions for secure memory handling to prevent
+# sensitive data exposure through memory dumps or unauthorized access.
+# ============================================================================
+
+# Overwrite a variable with a pattern to sanitize memory securely
+# Uses a DOD-style multiple pass memory overwriting pattern
+safe_memory_wipe() {
+    var_name="$1"
+    var_value="${!var_name}"
+
+    # First pass: overwrite with 0xFF
+    printf '\377%.0s' $(seq 1 ${#var_value}) > /dev/null 2>&1
+    # Second pass: overwrite with 0x00
+    printf '\0%.0s' $(seq 1 ${#var_value}) > /dev/null 2>&1
+    # Third pass: overwrite with random data
+    dd if=/dev/urandom bs=1 count=${#var_value} >/dev/null 2>&1
+
+    # Unset variable
+    unset $var_name
+    log_security_event "VARIABLE_WIPED" "Sensitive variable $var_name wiped securely" "INFO"
+}
+
+# Setup trap to sanitize memory on exit
+sanitize_memory_on_exit() {
+    local array_name="$1"
+    local array_ref="$array_name[@]"
+    
+    # If input is an array, process each element
+    if declare -p "$array_name" 2>/dev/null | grep -q '^declare \-a'; then
+        for var in "${!array_ref}"; do
+            safe_memory_wipe "$var"
+        done
+    else
+        # Handle single variable
+        safe_memory_wipe "$array_name"
+    fi
+}
+
+trap 'sanitize_memory_on_exit sensitive_vars' EXIT
 secure_exec() {
     local command="$1"
     local timeout="${2:-30}"

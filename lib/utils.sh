@@ -90,8 +90,15 @@ cleanup() {
     # Log security event for session termination
     log_security_event "SESSION_TERMINATED" "SVM session terminated normally" "INFO"
     
-    # Enhanced memory clearing for multiple sensitive variables
-    secure_clear_multiple "passphrase" "master_passphrase" "password" "input_pass" "export_pass1" "export_pass2" "import_pass"
+    # Enhanced memory clearing using DOD-standard secure wiping
+    for var in "passphrase" "master_passphrase" "password" "input_pass" "export_pass1" "export_pass2" "import_pass"; do
+        safe_memory_wipe "$var" 2>/dev/null || true
+    done
+    
+    # Also wipe any additional registered sensitive variables
+    if [[ -n "${sensitive_vars[@]}" ]]; then
+        sanitize_memory_on_exit "${sensitive_vars[@]}"
+    fi
     
     # Clear cache and arrays
     unset VAULT_CACHE
