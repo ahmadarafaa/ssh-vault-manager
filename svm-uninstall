@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+# First verify master passphrase
+if ! "${XDG_DATA_HOME:-$HOME/.local/share}/opt/ssh-vault-manager/svm.sh" --verify-passphrase; then
+    echo "❌ Master passphrase verification failed. Uninstallation aborted."
+    exit 1
+fi
+
+# If passphrase verified, proceed with uninstallation
+exec "${XDG_DATA_HOME:-$HOME/.local/share}/opt/ssh-vault-manager/uninstall.sh" "$@"
