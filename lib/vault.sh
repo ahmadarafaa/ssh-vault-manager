@@ -626,6 +626,53 @@ show_vault_info() {
     return 0
 }
 
+# Auto-create default vault during runtime if none exists and user wants to add a server
+auto_create_default_vault() {
+    local default_vault_name="default"
+    local default_vault_path="$vaults_dir/$default_vault_name"
+    
+    echo -e "${BLUE}No vault is currently selected.${NC}"
+    echo -e "${YELLOW}Creating a default vault for you...${NC}"
+    
+    # Create the default vault directory
+    mkdir -p "$default_vault_path"
+    chmod 700 "$default_vault_path"
+    
+    # Add to vault registry
+    echo "$default_vault_name|$(date '+%Y-%m-%d %H:%M:%S')|$(whoami)" >> "$base_vault_dir/.vault_registry"
+    
+    # Set as current vault
+    current_vault_name="$default_vault_name"
+    vault="$default_vault_path"
+    echo "$default_vault_name" > "$base_vault_dir/.current_vault"
+    chmod 600 "$base_vault_dir/.current_vault"
+    
+    # Initialize file paths
+    init_file_paths
+    
+    # Create and load default configuration
+    save_default_config
+    load_config
+    
+    # Create empty vault file using master passphrase
+    passphrase="$master_passphrase"
+    PASSPHRASE_TIMESTAMP=$(date +%s)
+    
+    # Create empty vault file
+    touch "$tmp_servers_file"
+    chmod 600 "$tmp_servers_file"
+    
+    # Encrypt and save the empty vault
+    if encrypt_vault "$tmp_servers_file" "$servers_file"; then
+        echo -e "${GREEN}✅ Default vault '$default_vault_name' created and activated.${NC}"
+        log_event "VAULT_AUTO_CREATED" "Default vault auto-created: $default_vault_name"
+        return 0
+    else
+        echo -e "${RED}Failed to create default vault.${NC}"
+        return 1
+    fi
+}
+
 # Search all vaults for a server name (case-insensitive) and connect automatically
 search_all_vaults() {
     local search_term="$1"

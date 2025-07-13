@@ -69,7 +69,7 @@ show_menu() {
         case $choice in
             [vV]) show_vault_menu ;;
             1) if [[ -z "$current_vault_name" ]]; then echo -e "${RED}No vault selected. Please use 'V' to select a vault first.${NC}"; continue_or_exit; else prompt_passphrase && check_file && connect; fi ;;
-            2) if [[ -z "$current_vault_name" ]]; then echo -e "${RED}No vault selected. Please use 'V' to select a vault first.${NC}"; continue_or_exit; else prompt_passphrase && check_file && add_server && save_vault; continue_or_exit; fi ;;
+            2) if [[ -z "$current_vault_name" ]]; then if auto_create_default_vault; then prompt_passphrase && check_file && add_server && save_vault; continue_or_exit; else echo -e "${RED}Failed to create default vault. Please use 'V' to create a vault manually.${NC}"; continue_or_exit; fi; else prompt_passphrase && check_file && add_server && save_vault; continue_or_exit; fi ;;
             3) if [[ -z "$current_vault_name" ]]; then echo -e "${RED}No vault selected. Please use 'V' to select a vault first.${NC}"; continue_or_exit; else prompt_passphrase && check_file && remove_server && save_vault; continue_or_exit; fi ;;
             4) if [[ -z "$current_vault_name" ]]; then echo -e "${RED}No vault selected. Please use 'V' to select a vault first.${NC}"; continue_or_exit; else prompt_passphrase && check_file && modify_server && save_vault; continue_or_exit; fi ;;
             5) if [[ -z "$current_vault_name" ]]; then echo -e "${RED}No vault selected. Please use 'V' to select a vault first.${NC}"; continue_or_exit; else prompt_passphrase && check_file && list_servers && continue_or_exit; fi ;;

@@ -144,6 +144,46 @@ restore_from_backup() {
     fi
 }
 
+# Function to create a default vault after fresh installation
+create_default_vault() {
+    local default_vault_name="default"
+    local default_vault_path="$BASE_DIR/vaults/$default_vault_name"
+    
+    echo "${BLUE}Creating default vault...${NC}"
+    
+    # Create the default vault directory
+    mkdir -p "$default_vault_path"
+    chmod 700 "$default_vault_path"
+    
+    # Add to vault registry
+    echo "$default_vault_name|$(date '+%Y-%m-%d %H:%M:%S')|$(whoami)" >> "$BASE_DIR/.vault_registry"
+    
+    # Set as current vault
+    echo "$default_vault_name" > "$BASE_DIR/.current_vault"
+    chmod 600 "$BASE_DIR/.current_vault"
+    
+    # Create default configuration file for the vault
+    cat > "$default_vault_path/.svm.conf" << 'EOF'
+# SVM Configuration File
+PBKDF2_ITERATIONS=600000
+CIPHER=aes-256-cbc
+DIGEST=sha512
+VAULT_VERSION=2.0
+PASSPHRASE_TIMEOUT=300
+MAX_LOGIN_ATTEMPTS=3
+CONNECTION_TIMEOUT=30
+CACHE_ENABLED=true
+LOG_MAX_LINES=1000
+VERIFY_INTEGRITY=true
+AUTO_BACKUP=true
+BACKUP_RETENTION=5
+EOF
+    chmod 600 "$default_vault_path/.svm.conf"
+    
+    echo "${GREEN}✅ Default vault '$default_vault_name' created successfully.${NC}"
+    echo "${CYAN}You can start adding servers to your vault using the 'svm' command.${NC}"
+}
+
 usage() {
   echo "Usage: $0 [--install-dir DIR] [--wrapper PATH]"
   echo
@@ -342,6 +382,9 @@ if [ "$RESTORE_FROM_BACKUP" != "true" ]; then
     # Create vault registry if it doesn't exist
     touch "${BASE_DIR}/.vault_registry"
     chmod 600 "${BASE_DIR}/.vault_registry"
+
+    # Create a default vault for fresh installations
+    create_default_vault
 else
     echo "${GREEN}Using restored data directory: $BASE_DIR${NC}"
 fi

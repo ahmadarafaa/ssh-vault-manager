@@ -161,9 +161,18 @@ main() {
     if [[ -z "$vault" ]]; then
         # Try to load the last selected vault
         if ! load_current_vault; then
-            # No vault selected, user will need to use vault management
-            echo -e "${YELLOW}Welcome to SSH Vault Manager with Multi-Vault Support!${NC}"
-            echo -e "${BLUE}Use 'V' for Vault Management to create or select a vault.${NC}"
+            # Check if this is a fresh installation (no vaults exist)
+            if [[ ! -d "$vaults_dir" ]] || [[ -z "$(ls -A "$vaults_dir" 2>/dev/null)" ]]; then
+                echo -e "${YELLOW}Welcome to SSH Vault Manager!${NC}"
+                echo -e "${BLUE}This appears to be your first time using SVM.${NC}"
+                echo -e "${CYAN}You can start using the system right away:${NC}"
+                echo -e "  • Use 'V' for Vault Management to create your first vault"
+                echo -e "  • Or use option '1' to Add a Server (a default vault will be created)"
+            else
+                # Vaults exist but none selected
+                echo -e "${YELLOW}Welcome to SSH Vault Manager with Multi-Vault Support!${NC}"
+                echo -e "${BLUE}Use 'V' for Vault Management to create or select a vault.${NC}"
+            fi
         fi
     else
         # Legacy mode: initialize file paths
