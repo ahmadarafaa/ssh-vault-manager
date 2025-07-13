@@ -55,7 +55,8 @@ add_server() {
         break
     done
 
-    printf "${BLUE}Username:${NC} ";    read username
+    printf "${BLUE}Username [root]:${NC} "; read username
+    username="${username:-root}"
 
     # Port validation loop
     while true; do
