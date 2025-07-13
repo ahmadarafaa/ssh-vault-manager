@@ -99,9 +99,35 @@ backup_data() {
     # Create destination directory if it doesn't exist
     mkdir -p "$destination"
     
+    # Show what's being backed up
+    echo "${BLUE}Backing up data from: $source${NC}"
+    if [ -d "$source/vaults" ]; then
+        local vault_count=0
+        for vault_dir in "$source/vaults"/*; do
+            if [ -d "$vault_dir" ]; then
+                local vault_name=$(basename "$vault_dir")
+                echo "  • Backing up vault: $vault_name"
+                vault_count=$((vault_count + 1))
+            fi
+        done
+        echo "${CYAN}Total vaults to backup: $vault_count${NC}"
+    fi
+    
     # Copy files using cp -a to preserve permissions
     if cp -a "$source/." "$destination" 2>/dev/null; then
         echo "${GREEN}✅ Data successfully backed up to: $destination${NC}"
+        
+        # Verify backup
+        if [ -d "$destination/vaults" ]; then
+            local backed_up_count=0
+            for vault_dir in "$destination/vaults"/*; do
+                if [ -d "$vault_dir" ]; then
+                    backed_up_count=$((backed_up_count + 1))
+                fi
+            done
+            echo "${GREEN}✓ Verified: $backed_up_count vault(s) backed up${NC}"
+        fi
+        
         return 0
     else
         echo "${RED}❌ Failed to backup data to: $destination${NC}"

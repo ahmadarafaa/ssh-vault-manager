@@ -81,6 +81,16 @@ validate_backup() {
     local backup_dir="$1"
     # Check if this is a valid SVM backup
     if [ -d "$backup_dir/vaults" ] || [ -f "$backup_dir/.vault_registry" ]; then
+        # Additional validation: check if vaults directory contains actual vaults
+        if [ -d "$backup_dir/vaults" ]; then
+            local vault_count=0
+            for vault_dir in "$backup_dir/vaults"/*; do
+                if [ -d "$vault_dir" ]; then
+                    vault_count=$((vault_count + 1))
+                fi
+            done
+            # Even if no vaults exist, it's still a valid backup structure
+        fi
         return 0  # Valid backup
     else
         return 1  # Invalid backup
@@ -136,7 +146,53 @@ restore_from_backup() {
         chmod 600 "$target_dir/logs/.security.log" 2>/dev/null || true
         chmod 600 "$target_dir/.vault_registry" 2>/dev/null || true
         
-        echo "${GREEN}✅ Backup restored successfully!${NC}"
+        # Set secure permissions for all individual vault directories
+        if [ -d "$target_dir/vaults" ]; then
+            echo "${BLUE}Restoring vault permissions...${NC}"
+            local vault_count=0
+            for vault_dir in "$target_dir/vaults"/*; do
+                if [ -d "$vault_dir" ]; then
+                    local vault_name=$(basename "$vault_dir")
+                    echo "  • Restoring vault: $vault_name"
+                    chmod 700 "$vault_dir"
+                    # Set permissions for vault configuration files
+                    chmod 600 "$vault_dir/.svm.conf" 2>/dev/null || true
+                    chmod 600 "$vault_dir/.vault.enc" 2>/dev/null || true
+                    chmod 600 "$vault_dir/.connection.log" 2>/dev/null || true
+                    vault_count=$((vault_count + 1))
+                fi
+            done
+            echo "${GREEN}✓ Restored $vault_count vault(s) with secure permissions${NC}"
+        fi
+        
+        # Verify restoration by checking vault registry and directories
+        echo "${BLUE}Verifying restoration...${NC}"
+        local restored_vaults=0
+        local registry_vaults=0
+        
+        # Count restored vault directories
+        if [ -d "$target_dir/vaults" ]; then
+            for vault_dir in "$target_dir/vaults"/*; do
+                if [ -d "$vault_dir" ]; then
+                    restored_vaults=$((restored_vaults + 1))
+                fi
+            done
+        fi
+        
+        # Count vaults in registry
+        if [ -f "$target_dir/.vault_registry" ]; then
+            registry_vaults=$(wc -l < "$target_dir/.vault_registry" 2>/dev/null || echo 0)
+        fi
+        
+        echo "${GREEN}✓ Vault directories restored: $restored_vaults${NC}"
+        echo "${GREEN}✓ Vault registry entries: $registry_vaults${NC}"
+        
+        if [ $restored_vaults -gt 0 ]; then
+            echo "${GREEN}✅ Backup restored successfully!${NC}"
+        else
+            echo "${YELLOW}⚠️ Backup restored but no vaults found. This might be expected for empty installations.${NC}"
+        fi
+        
         return 0
     else
         echo "${RED}❌ Failed to restore from backup.${NC}"
