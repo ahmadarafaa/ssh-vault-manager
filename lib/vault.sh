@@ -147,13 +147,24 @@ list_vaults() {
                 fi
                 
                 if [[ $file_size -gt 100 ]]; then
-                    # Vault has content, estimate server count
-                    # For encrypted files, we estimate based on size
-                    server_count=$((file_size / 150))  # Rough estimate
-                    if [[ $server_count -gt 0 ]]; then
-                        status="Active"
+                    # Vault has content, decrypt and count actual servers
+                    local temp_file=$(create_svm_temp_file 'vault_count')
+                    local temp_passphrase="$master_passphrase"
+                    
+                    if [[ -n "$temp_passphrase" ]] && decrypt_vault "$vault_file" "$temp_file" 2>/dev/null; then
+                        # Count non-empty, non-comment lines
+                        server_count=$(grep -v '^#' "$temp_file" 2>/dev/null | grep -v '^[[:space:]]*$' | wc -l || echo 0)
+                        shred -zfu "$temp_file" 2>/dev/null || rm -f "$temp_file"
+                        
+                        if [[ $server_count -gt 0 ]]; then
+                            status="Active"
+                        else
+                            status="Empty"
+                        fi
                     else
-                        status="Empty"
+                        # Can't decrypt, show as encrypted but unknown count
+                        server_count=0
+                        status="Encrypted"
                     fi
                 else
                     status="Empty"
@@ -165,7 +176,10 @@ list_vaults() {
             
             if [[ "$status" == "Active" ]]; then
                 printf " \033[0;32m[Active]\033[0m"
-                printf " \033[0;36m(~%d servers)\033[0m" "$server_count"
+                printf " \033[0;36m(%d servers)\033[0m" "$server_count"
+            elif [[ "$status" == "Encrypted" ]]; then
+                printf " \033[0;93m[Encrypted]\033[0m"
+                printf " \033[0;90m(unknown count)\033[0m"
             else
                 printf " \033[0;33m[Empty]\033[0m"
             fi
