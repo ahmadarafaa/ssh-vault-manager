@@ -19,6 +19,7 @@ SVM_VERSION=$(read_version_file)
 
 # Default configuration
 declare -A CONFIG=(
+    [SVM_VERSION]="$SVM_VERSION"
     [PBKDF2_ITERATIONS]=600000
     [CIPHER]="aes-256-cbc"
     [DIGEST]="sha512"
