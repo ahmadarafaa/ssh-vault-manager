@@ -146,40 +146,20 @@ list_vaults() {
                     file_size=$(wc -c < "$vault_file" 2>/dev/null || echo 0)
                 fi
                 
-                if [[ $file_size -gt 100 ]]; then
+                # Always attempt to decrypt if file exists (remove size threshold)
+                if [[ $file_size -gt 0 ]]; then
                     # Vault has content, try to decrypt and count actual servers
                     local temp_file=$(create_svm_temp_file 'vault_count')
-                    
-                    # Debug info for default vault
-                    if [[ "$vault_name" == "default" ]]; then
-                        echo "[DEBUG] Default vault file: $vault_file" >&2
-                        echo "[DEBUG] Default vault file size: $file_size bytes" >&2
-                        echo "[DEBUG] Master passphrase available: ${master_passphrase:+YES}${master_passphrase:-NO}" >&2
-                        echo "[DEBUG] Temp file created: $temp_file" >&2
-                    fi
                     
                     # Try to decrypt with available passphrase
                     if [[ -n "$master_passphrase" ]]; then
                         local saved_passphrase="$passphrase"
                         passphrase="$master_passphrase"
                         
-                        # Debug: Check if decryption works
                         if decrypt_vault "$vault_file" "$temp_file" 2>/dev/null; then
-                            # Debug for default vault - show temp file contents
-                            if [[ "$vault_name" == "default" ]]; then
-                                echo "[DEBUG] Decryption successful, temp file content:" >&2
-                                cat "$temp_file" >&2
-                                echo "[DEBUG] --- End of temp file content ---" >&2
-                            fi
-                            
                             # Count non-empty, non-comment lines
                             server_count=$(grep -v '^#' "$temp_file" 2>/dev/null | grep -v '^[[:space:]]*$' | wc -l || echo 0)
                             server_count=$(echo "$server_count" | tr -d ' ')
-                            
-                            # Debug info (only for default vault)
-                            if [[ "$vault_name" == "default" ]]; then
-                                echo "[DEBUG] Default vault decrypted, server_count: $server_count" >&2
-                            fi
                             
                             if [[ $server_count -gt 0 ]]; then
                                 status="Active"
@@ -187,11 +167,6 @@ list_vaults() {
                                 status="Empty"
                             fi
                         else
-                            # Debug for default vault decryption failure
-                            if [[ "$vault_name" == "default" ]]; then
-                                echo "[DEBUG] Default vault decryption FAILED" >&2
-                            fi
-                            
                             # Decryption failed, use file size estimation as fallback
                             server_count=$((file_size / 150))
                             if [[ $server_count -gt 0 ]]; then
@@ -347,8 +322,8 @@ select_vault() {
                     file_size=$(wc -c < "$vault_file" 2>/dev/null || echo 0)
                 fi
                 
-                if [[ $file_size -gt 100 ]]; then
-                    # Try to decrypt and count servers
+                if [[ $file_size -gt 0 ]]; then
+                    # Try to decrypt and count servers (remove size threshold)
                     if [[ -n "$master_passphrase" ]]; then
                         local temp_file=$(create_svm_temp_file 'select_count')
                         local saved_passphrase="$passphrase"
