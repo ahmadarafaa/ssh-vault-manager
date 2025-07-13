@@ -73,7 +73,22 @@ NC='\033[0m' # No Color
 # Function to detect backup directories
 find_backups() {
     # Find all svm-backup-* directories in the home directory
-    find "$HOME" -maxdepth 1 -type d -name "svm-backup-*" 2>/dev/null | sort -r
+    local backup_dirs
+    backup_dirs=$(find "$HOME" -maxdepth 1 -type d -name "svm-backup-*" 2>/dev/null | sort -r)
+    
+    # Debug: show what backups were found
+    if [ -n "$backup_dirs" ]; then
+        echo "${BLUE}Debug: Found backup directories:${NC}" >&2
+        echo "$backup_dirs" | while read -r dir; do
+            if [ -n "$dir" ]; then
+                echo "  - $dir" >&2
+            fi
+        done
+    else
+        echo "${YELLOW}Debug: No backup directories found in $HOME${NC}" >&2
+    fi
+    
+    echo "$backup_dirs"
 }
 
 # Function to validate a backup directory
@@ -318,9 +333,21 @@ if [ "$BACKUP_COUNT" -gt 0 ]; then
     case "$option_number" in
         2)
             MOST_RECENT_BACKUP=$(echo "$BACKUPS" | head -1)
+            echo "${BLUE}Selected most recent backup: $MOST_RECENT_BACKUP${NC}"
+            
             if [ -n "$MOST_RECENT_BACKUP" ]; then
-                if restore_from_backup "$MOST_RECENT_BACKUP"; then
-                    RESTORE_FROM_BACKUP=true
+                # Pre-validate the backup before attempting restoration
+                if validate_backup "$MOST_RECENT_BACKUP"; then
+                    echo "${GREEN}✓ Backup validation passed${NC}"
+                    if restore_from_backup "$MOST_RECENT_BACKUP"; then
+                        RESTORE_FROM_BACKUP=true
+                    else
+                        echo "${RED}❌ Backup restoration failed${NC}"
+                    fi
+                else
+                    echo "${RED}❌ Backup validation failed for: $MOST_RECENT_BACKUP${NC}"
+                    echo "${YELLOW}This backup may be corrupted or incomplete.${NC}"
+                    echo "${CYAN}Try using option 3 to manually select a different backup.${NC}"
                 fi
             else
                 echo "${RED}No valid backup found.${NC}"
