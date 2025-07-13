@@ -316,12 +316,42 @@ select_vault() {
         if [[ -d "$vault_path" ]]; then
             local vault_name=$(basename "$vault_path")
             
-            # Count servers in each vault for display
+            # Count servers in each vault for display (using same logic as list_vaults)
             local vault_file="$vault_path/${CONFIG[VAULT_NAME]}"
             local server_count=0
-            if [[ -f "$vault_file" && -r "$vault_file" ]]; then
-                server_count=$(grep -v '^#' "$vault_file" 2/dev/null | grep -v '^[[:space:]]*$' | wc -l || echo 0)
-                server_count=$(echo "$server_count" | tr -d ' ')
+            local status="Empty"
+            
+            if [[ -f "$vault_file" ]]; then
+                local file_size=0
+                if [[ -r "$vault_file" ]]; then
+                    file_size=$(wc -c < "$vault_file" 2>/dev/null || echo 0)
+                fi
+                
+                if [[ $file_size -gt 100 ]]; then
+                    # Try to decrypt and count servers
+                    if [[ -n "$master_passphrase" ]]; then
+                        local temp_file=$(create_svm_temp_file 'select_count')
+                        local saved_passphrase="$passphrase"
+                        passphrase="$master_passphrase"
+                        
+                        if decrypt_vault "$vault_file" "$temp_file" 2>/dev/null; then
+                            server_count=$(grep -v '^#' "$temp_file" 2>/dev/null | grep -v '^[[:space:]]*$' | wc -l || echo 0)
+                            server_count=$(echo "$server_count" | tr -d ' ')
+                            status="Active"
+                        else
+                            # Fallback to estimation
+                            server_count=$((file_size / 150))
+                            status="Encrypted"
+                        fi
+                        
+                        passphrase="$saved_passphrase"
+                        shred -zfu "$temp_file" 2>/dev/null || rm -f "$temp_file"
+                    else
+                        # No passphrase, use estimation
+                        server_count=$((file_size / 150))
+                        status="Encrypted"
+                    fi
+                fi
             fi
 
             # Show vault info with server count and current vault indicator
