@@ -147,24 +147,48 @@ list_vaults() {
                 fi
                 
                 if [[ $file_size -gt 100 ]]; then
-                    # Vault has content, decrypt and count actual servers
+                    # Vault has content, try to decrypt and count actual servers
                     local temp_file=$(create_svm_temp_file 'vault_count')
-                    local temp_passphrase="$master_passphrase"
                     
-                    if [[ -n "$temp_passphrase" ]] && decrypt_vault "$vault_file" "$temp_file" 2>/dev/null; then
-                        # Count non-empty, non-comment lines
-                        server_count=$(grep -v '^#' "$temp_file" 2>/dev/null | grep -v '^[[:space:]]*$' | wc -l || echo 0)
-                        shred -zfu "$temp_file" 2>/dev/null || rm -f "$temp_file"
+                    # Try to decrypt with available passphrase
+                    if [[ -n "$master_passphrase" ]]; then
+                        local saved_passphrase="$passphrase"
+                        passphrase="$master_passphrase"
                         
-                        if [[ $server_count -gt 0 ]]; then
-                            status="Active"
+                        if decrypt_vault "$vault_file" "$temp_file" 2>/dev/null; then
+                            # Count non-empty, non-comment lines
+                            server_count=$(grep -v '^#' "$temp_file" 2>/dev/null | grep -v '^[[:space:]]*$' | wc -l || echo 0)
+                            server_count=$(echo "$server_count" | tr -d ' ')
+                            
+                            if [[ $server_count -gt 0 ]]; then
+                                status="Active"
+                            else
+                                status="Empty"
+                            fi
                         else
-                            status="Empty"
+                            # Decryption failed, use file size estimation as fallback
+                            server_count=$((file_size / 150))
+                            if [[ $server_count -gt 0 ]]; then
+                                status="Encrypted"
+                            else
+                                status="Unknown"
+                            fi
                         fi
+                        
+                        # Restore previous passphrase
+                        passphrase="$saved_passphrase"
+                        
+                        # Clean up temp file
+                        shred -zfu "$temp_file" 2>/dev/null || rm -f "$temp_file"
                     else
-                        # Can't decrypt, show as encrypted but unknown count
-                        server_count=0
-                        status="Encrypted"
+                        # No passphrase available, use file size estimation
+                        server_count=$((file_size / 150))
+                        if [[ $server_count -gt 0 ]]; then
+                            status="Encrypted"
+                        else
+                            status="Unknown"
+                        fi
+                        rm -f "$temp_file"
                     fi
                 else
                     status="Empty"
@@ -179,9 +203,13 @@ list_vaults() {
                 printf " \033[0;36m(%d servers)\033[0m" "$server_count"
             elif [[ "$status" == "Encrypted" ]]; then
                 printf " \033[0;93m[Encrypted]\033[0m"
-                printf " \033[0;90m(unknown count)\033[0m"
+                printf " \033[0;90m(~%d servers)\033[0m" "$server_count"
+            elif [[ "$status" == "Unknown" ]]; then
+                printf " \033[0;90m[Unknown]\033[0m"
+                printf " \033[0;90m(~%d servers)\033[0m" "$server_count"
             else
                 printf " \033[0;33m[Empty]\033[0m"
+                printf " \033[0;37m(0 servers)\033[0m"
             fi
             
             # Show if it's the current vault
