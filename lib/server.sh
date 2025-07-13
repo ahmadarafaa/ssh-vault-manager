@@ -376,10 +376,16 @@ search_servers() {
     set +e
     while IFS= read -r line; do
         [[ -z "$line" || "$line" =~ ^# ]] && continue
-        # Convert both line and search_term to lowercase for case-insensitive search
-        line_lc="${line,,}"
+        # Parse the line to get individual fields
+        IFS='|' read -r name ip username password port group info <<< "$line"
+        
+        # Convert search term to lowercase for case-insensitive search
         search_term_lc="${search_term,,}"
-        if [[ "$line_lc" == *"$search_term_lc"* ]]; then
+        
+        # Search in name, IP, and username fields
+        if [[ "${name,,}" == *"$search_term_lc"* ]] || \
+           [[ "${ip,,}" == *"$search_term_lc"* ]] || \
+           [[ "${username,,}" == *"$search_term_lc"* ]]; then
             found_servers+=("$line")
             ((found_count++))
         fi

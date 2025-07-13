@@ -791,7 +791,10 @@ search_all_vaults() {
         while IFS= read -r line; do
             [[ -z "$line" || "$line" =~ ^# ]] && continue
             IFS='|' read -r name ip username password port group info <<< "$line"
-            if [[ "${name,,}" == *"$search_lc"* ]]; then
+            # Search in name, IP, and username fields
+            if [[ "${name,,}" == *"$search_lc"* ]] || \
+               [[ "${ip,,}" == *"$search_lc"* ]] || \
+               [[ "${username,,}" == *"$search_lc"* ]]; then
                 found_any=true
                 found_servers+=("$line")
                 found_vaults+=("$vault_name")
