@@ -332,22 +332,26 @@ if [ "$BACKUP_COUNT" -gt 0 ]; then
     
     case "$option_number" in
         2)
-            MOST_RECENT_BACKUP=$(echo "$BACKUPS" | head -1)
-            echo "${BLUE}Selected most recent backup: $MOST_RECENT_BACKUP${NC}"
+            MOST_RECENT_BACKUP=$(echo "$BACKUPS" | head -1 | tr -d '\n\r')
+            echo "${BLUE}Selected most recent backup: '$MOST_RECENT_BACKUP'${NC}"
+            echo "${CYAN}Debug: Backup path length: ${#MOST_RECENT_BACKUP}${NC}"
             
             if [ -n "$MOST_RECENT_BACKUP" ]; then
-                # Pre-validate the backup before attempting restoration
-                if validate_backup "$MOST_RECENT_BACKUP"; then
+                # Check if the directory actually exists
+                if [ ! -d "$MOST_RECENT_BACKUP" ]; then
+                    echo "${RED}❌ Error: Backup directory does not exist: $MOST_RECENT_BACKUP${NC}"
+                    echo "${YELLOW}This might be a path resolution issue.${NC}"
+                elif ! validate_backup "$MOST_RECENT_BACKUP"; then
+                    echo "${RED}❌ Backup validation failed for: $MOST_RECENT_BACKUP${NC}"
+                    echo "${YELLOW}This backup may be corrupted or incomplete.${NC}"
+                    echo "${CYAN}Try using option 3 to manually select a different backup.${NC}"
+                else
                     echo "${GREEN}✓ Backup validation passed${NC}"
                     if restore_from_backup "$MOST_RECENT_BACKUP"; then
                         RESTORE_FROM_BACKUP=true
                     else
                         echo "${RED}❌ Backup restoration failed${NC}"
                     fi
-                else
-                    echo "${RED}❌ Backup validation failed for: $MOST_RECENT_BACKUP${NC}"
-                    echo "${YELLOW}This backup may be corrupted or incomplete.${NC}"
-                    echo "${CYAN}Try using option 3 to manually select a different backup.${NC}"
                 fi
             else
                 echo "${RED}No valid backup found.${NC}"
