@@ -155,10 +155,16 @@ list_vaults() {
                         local saved_passphrase="$passphrase"
                         passphrase="$master_passphrase"
                         
+                        # Debug: Check if decryption works
                         if decrypt_vault "$vault_file" "$temp_file" 2>/dev/null; then
                             # Count non-empty, non-comment lines
                             server_count=$(grep -v '^#' "$temp_file" 2>/dev/null | grep -v '^[[:space:]]*$' | wc -l || echo 0)
                             server_count=$(echo "$server_count" | tr -d ' ')
+                            
+                            # Debug info (only for default vault)
+                            if [[ "$vault_name" == "default" ]]; then
+                                echo "[DEBUG] Default vault decrypted, server_count: $server_count" >&2
+                            fi
                             
                             if [[ $server_count -gt 0 ]]; then
                                 status="Active"
@@ -310,9 +316,17 @@ select_vault() {
         if [[ -d "$vault_path" ]]; then
             local vault_name=$(basename "$vault_path")
             
-            # Show vault info with indicator for current vault
-            printf "  %d. \033[0;35m%-20s\033[0m" "$i" "$vault_name"
-            
+            # Count servers in each vault for display
+            local vault_file="$vault_path/${CONFIG[VAULT_NAME]}"
+            local server_count=0
+            if [[ -f "$vault_file" && -r "$vault_file" ]]; then
+                server_count=$(grep -v '^#' "$vault_file" 2/dev/null | grep -v '^[[:space:]]*$' | wc -l || echo 0)
+                server_count=$(echo "$server_count" | tr -d ' ')
+            fi
+
+            # Show vault info with server count and current vault indicator
+            printf "  %d. \033[0;35m%-20s\033[0m \033[0;36m(%d servers)\033[0m" "$i" "$vault_name" "$server_count"
+
             # Show if it's the current vault
             if [[ "$vault_name" == "$current_vault_name" ]]; then
                 printf " \033[0;34m← Current\033[0m"
